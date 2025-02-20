@@ -1,8 +1,8 @@
-import streamlit as st
-import numpy as np
-import tensorflow as tf
-import cv2
-from PIL import Image
+# import streamlit as st
+# import numpy as np
+# import tensorflow as tf
+# import cv2
+# from PIL import Image
 
 # Load the trained model
 MODEL_PATH = "retinal_disease_detection_model.h5"
