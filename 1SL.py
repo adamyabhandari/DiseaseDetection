@@ -4,9 +4,15 @@ import tensorflow as tf
 import cv2
 from PIL import Image
 
-# Load the trained model
-MODEL_PATH = "retinal_disease_detection_model.h5"
-model = tf.keras.models.load_model(MODEL_PATH)
+# Load the trained models
+MODEL_PATHS = {
+    "Retinal Disease Detection": "retinal_disease_detection_model.h5",
+    "Pneumonia Detection": "chest_disease_detection_model.h5",
+    "tb_disease Detection": "tb_disease_detection_model.h5"
+}
+
+# Load all models into a dictionary
+models = {name: tf.keras.models.load_model(path) for name, path in MODEL_PATHS.items()}
 
 # Set image dimensions
 IMG_SIZE = 128  # Update to match the model's expected input size
@@ -29,7 +35,7 @@ def preprocess_image(image):
     return image
 
 # Function to make prediction
-def predict_disease(image):
+def predict_disease(image, model):
     processed_image = preprocess_image(image)
     prediction = model.predict(processed_image)
 
@@ -41,7 +47,11 @@ def predict_disease(image):
 
 # Streamlit UI
 st.title("🩺 AI-Powered Early Disease Detection")
-st.write("Upload a medical image (X-ray, MRI, etc.) to detect early-stage diseases.")
+st.write("Upload a medical image (X-ray, MRI, Retina scan, etc.) to detect early-stage diseases.")
+
+# Dropdown to select the model
+selected_model_name = st.selectbox("Select a Disease Model:", list(MODEL_PATHS.keys()))
+selected_model = models[selected_model_name]
 
 # File uploader
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg"])
@@ -53,6 +63,6 @@ if uploaded_file is not None:
 
     # Run detection when the button is clicked
     if st.button("Analyze Image"):
-        result = predict_disease(image)
+        result = predict_disease(image, selected_model)
         st.subheader("🔍 Prediction Result")
-        st.write(result)
+        st.write(f"**{selected_model_name}**: {result}")
